@@ -174,14 +174,22 @@ button, input, select, textarea { font-family: inherit; }
 .cookie-banner__text { flex: 1 1 280px; font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; }
 .cookie-banner__actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
+.cab-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.auth-layout { display: grid; grid-template-columns: 1fr 0.84fr; gap: 18px; align-items: start; }
+.demo-creds { display: flex; flex-direction: column; gap: 12px; }
+.demo-creds__box { padding: 14px; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--bg); }
+.cab-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 18px; align-items: start; }
+.cab-list { display: flex; flex-direction: column; gap: 10px; }
+.cab-item { padding: 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); display: flex; flex-direction: column; gap: 6px; }
+
 @media (max-width: 980px) {
-  .split-grid, .desk-tickets-layout, .admin-grid { grid-template-columns: 1fr; }
+  .split-grid, .desk-tickets-layout, .admin-grid, .auth-layout, .cab-grid { grid-template-columns: 1fr; }
   .tickets-sidebar { border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 14px; }
   .sla-chip { display: none; }
 }
 
 @media (max-width: 680px) {
-  .console-tabs { order: 3; width: 100%; justify-content: space-between; }
-  .console-tab { flex: 1; justify-content: center; padding: 6px 8px; font-size: 0.76rem; }
+  .console-tabs { order: 3; width: 100%; overflow-x: auto; justify-content: flex-start; }
+  .console-tab { flex: 0 0 auto; padding: 6px 10px; font-size: 0.76rem; }
   .segments-grid { grid-template-columns: 1fr; }
 }

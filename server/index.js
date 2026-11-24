@@ -28,12 +28,34 @@ const {
   getBotStatus
 } = require('./bot');
 
+const {
+  initClientAccount,
+  handleClientApi
+} = require('./clientAccount');
+
 const PORT = Number(process.env.PORT) || 4005;
 const HOST = process.env.HOST || '0.0.0.0';
 const ROOT_DIR = path.join(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 
+const CLIENT_ACCOUNT_CONFIG = {
+  prefix: 'puls',
+  ordersTable: null,
+  seed: {
+    name: 'Артём Морозов',
+    email: 'client@puls-bot.ru',
+    phone: '+7 (916) 442-19-80',
+    password: process.env.DEMO_CLIENT_PASSWORD || 'client12345',
+    meta: {
+      handle: '@artem_m',
+      notifyTg: true,
+      ticketCodes: ['TK-812']
+    }
+  }
+};
+
 const db = initDatabase();
+initClientAccount(db, CLIENT_ACCOUNT_CONFIG);
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -184,6 +206,15 @@ async function handleApi(req, res, parsed) {
 
   const isSecure = req.headers['x-forwarded-proto'] === 'https' || process.env.NODE_ENV === 'production';
   const user = getSessionUser(db, req);
+
+  if (pathname.startsWith('/api/client/')) {
+    return handleClientApi(req, res, parsed, db, CLIENT_ACCOUNT_CONFIG, {
+      sendJson,
+      readJson,
+      loginLimiter,
+      isSecure
+    });
+  }
 
   if (method === 'GET' && pathname === '/api/bootstrap') {
     const tickets = db.prepare('SELECT * FROM tickets ORDER BY id DESC LIMIT 40').all().map(mapTicket);

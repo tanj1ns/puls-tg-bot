@@ -10,6 +10,7 @@ import {
   PhoneCall,
   Send,
   Sun,
+  User,
   X
 } from 'lucide-react';
 import {
@@ -21,9 +22,26 @@ import {
   isSecretAdminHash,
   pulsApi
 } from './api';
+import { createClientAuth } from './clientAuth';
 import PrivacyModal from './components/PrivacyModal';
 import AdminBot from './pages/AdminBot';
+import ClientCabinet from './components/ClientCabinet';
 import CookieBanner, { setCookie } from './components/CookieBanner';
+
+const pulsClientAuth = createClientAuth({
+  prefix: 'puls',
+  demoSeed: {
+    name: 'Артём Морозов',
+    email: 'client@puls-bot.ru',
+    phone: '+7 (916) 442-19-80',
+    password: 'client12345',
+    meta: {
+      handle: '@artem_m',
+      notifyTg: true,
+      ticketCodes: ['TK-812']
+    }
+  }
+});
 
 export default function App() {
   const [theme, setTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'dark');
@@ -33,6 +51,7 @@ export default function App() {
   const [campaigns, setCampaigns] = useState([]);
   const [botStatus, setBotStatus] = useState({ botConfigured: false, botPollingActive: false });
   const [user, setUser] = useState(null);
+  const [client, setClient] = useState(null);
   const [isAdminRoute, setIsAdminRoute] = useState(false);
 
   const [selectedTicketId, setSelectedTicketId] = useState(1);
@@ -80,6 +99,10 @@ export default function App() {
 
   useEffect(() => {
     refresh();
+    pulsClientAuth
+      .me()
+      .then((res) => setClient(res.client || null))
+      .catch(() => {});
     async function syncHash() {
       const ok = await isSecretAdminHash(window.location.hash);
       setIsAdminRoute(ok);
@@ -88,6 +111,12 @@ export default function App() {
     window.addEventListener('hashchange', syncHash);
     return () => window.removeEventListener('hashchange', syncHash);
   }, []);
+
+  useEffect(() => {
+    if (!client) return;
+    setCbName(client.name || '');
+    setCbPhone(client.phone || '');
+  }, [client]);
 
   useEffect(() => {
     if (callbackOpen) cbOpenedAt.current = Date.now();
@@ -107,7 +136,9 @@ export default function App() {
     try {
       const res = await pulsApi.sendBotMessage({
         ticketId: startNewTicket ? null : activeTicket?.id,
-        text
+        text,
+        userName: client?.name,
+        userHandle: client?.meta?.handle
       });
       setBotInput('');
       setTickets((prev) => {
@@ -115,6 +146,10 @@ export default function App() {
         return exists ? prev.map((t) => (t.id === res.ticket.id ? res.ticket : t)) : [res.ticket, ...prev];
       });
       setSelectedTicketId(res.ticket.id);
+      if (client && res.ticket?.code && !(client.meta?.ticketCodes || []).includes(res.ticket.code)) {
+        const updated = await pulsClientAuth.appendCode('ticketCodes', res.ticket.code).catch(() => null);
+        if (updated) setClient(updated);
+      }
     } catch {}
   }
 
@@ -154,6 +189,10 @@ export default function App() {
       });
       setTickets((prev) => [res.ticket, ...prev]);
       setSelectedTicketId(res.ticket.id);
+      if (client && res.ticket?.code) {
+        const updated = await pulsClientAuth.appendCode('ticketCodes', res.ticket.code).catch(() => null);
+        if (updated) setClient(updated);
+      }
       setCallbackOpen(false);
       setCbName('');
       setCbPhone('');
@@ -211,6 +250,13 @@ export default function App() {
               >
                 <Megaphone size={14} /> Рассылки
               </button>
+              <button
+                type="button"
+                className={`console-tab ${deskTab === 'account' ? 'is-active' : ''}`}
+                onClick={() => setDeskTab('account')}
+              >
+                <User size={14} /> Кабинет
+              </button>
             </nav>
           )}
 
@@ -246,8 +292,22 @@ export default function App() {
         />
       ) : (
         <main id="workspace" className="container workspace">
-
-          <div className="split-grid">
+          {deskTab === 'account' ? (
+            <ClientCabinet
+              client={client}
+              clientAuth={pulsClientAuth}
+              tickets={tickets}
+              onClientChange={setClient}
+              onOpenTicket={(tid) => {
+                setSelectedTicketId(tid);
+                setDeskTab('tickets');
+              }}
+              onOpenCallback={() => setCallbackOpen(true)}
+              onBackToDesk={() => setDeskTab('tickets')}
+              onOpenPrivacy={() => setPrivacyOpen(true)}
+            />
+          ) : (
+            <div className="split-grid">
             {/* LEFT: Live Telegram Bot Emulator */}
             <section className="tg-phone" aria-label="Эмулятор Telegram-бота">
               <div className="tg-phone__head">
@@ -473,6 +533,7 @@ export default function App() {
               )}
             </section>
           </div>
+          )}
         </main>
       )}
 
