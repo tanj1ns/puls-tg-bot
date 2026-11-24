@@ -189,7 +189,7 @@ button, input, select, textarea { font-family: inherit; }
 }
 
 @media (max-width: 680px) {
-  .console-tabs { order: 3; width: 100%; overflow-x: auto; justify-content: flex-start; }
-  .console-tab { flex: 0 0 auto; padding: 6px 10px; font-size: 0.76rem; }
+  .console-tabs { order: 3; width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; overflow: visible; }
+  .console-tab { justify-content: center; padding: 7px 6px; font-size: 0.76rem; }
   .segments-grid { grid-template-columns: 1fr; }
 }
