@@ -23,6 +23,9 @@ export default function PrivacyModal({ onClose }) {
           Заказывая обратный звонок через бота поддержки «ПУЛЬС», вы даёте согласие на обработку имени, номера телефона и текста обращения для связи с оператором и решения вопроса по заказу.
         </p>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+          Сайт также использует cookie (<span className="mono">SameSite=Lax</span>): техническую <span className="mono">HttpOnly</span>-сессию <span className="mono">puls_sid</span>, выбранную тему <span className="mono">puls_theme</span>, согласие <span className="mono">puls_cookie_consent</span> и необязательный cookie <span className="mono">puls_prefs</span> (удаляется при выборе «Только необходимые»).
+        </p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
           Персональные данные не передаются сторонним сервисам и могут быть удалены по вашему запросу.
         </p>
       </div>

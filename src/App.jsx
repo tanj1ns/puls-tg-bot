@@ -24,6 +24,7 @@ import {
 } from './api';
 import PrivacyModal from './components/PrivacyModal';
 import AdminBot from './pages/AdminBot';
+import CookieBanner, { setCookie } from './components/CookieBanner';
 
 export default function App() {
   const [theme, setTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'dark');
@@ -49,6 +50,7 @@ export default function App() {
   const [honeypot, setHoneypot] = useState('');
   const [consent, setConsent] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [cookieForceOpen, setCookieForceOpen] = useState(false);
   const [cbError, setCbError] = useState('');
   const [cbBusy, setCbBusy] = useState(false);
   const cbOpenedAt = useRef(Date.now());
@@ -57,6 +59,7 @@ export default function App() {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     document.documentElement.setAttribute('data-theme', next);
+    setCookie('puls_theme', next);
     try {
       localStorage.setItem('puls_theme', next);
     } catch {}
@@ -577,10 +580,23 @@ export default function App() {
 
       {privacyOpen && <PrivacyModal onClose={() => setPrivacyOpen(false)} />}
 
+      <CookieBanner
+        prefix="puls"
+        forceOpen={cookieForceOpen}
+        onCloseForce={() => setCookieForceOpen(false)}
+        onOpenPrivacy={() => setPrivacyOpen(true)}
+      />
+
       <footer className="footer">
         <div className="container footer__inner">
           <span>&copy; 2026 ПУЛЬС — Автоматизация клиентского сервиса в Telegram</span>
-          <span>Node.js + Telegram Bot API + React</span>
+          <span className="footer__meta">
+            <span>Node.js + Telegram Bot API + React</span>
+            <span aria-hidden="true">·</span>
+            <button type="button" className="link-inline" onClick={() => setPrivacyOpen(true)}>Политика cookie</button>
+            <span aria-hidden="true">·</span>
+            <button type="button" className="link-inline" onClick={() => setCookieForceOpen(true)}>Настройки cookie</button>
+          </span>
         </div>
       </footer>
     </div>
