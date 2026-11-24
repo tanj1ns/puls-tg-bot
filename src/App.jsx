@@ -5,7 +5,6 @@ import {
   CheckCheck,
   Headphones,
   Megaphone,
-  Menu,
   MessageCircle,
   Moon,
   PhoneCall,
@@ -28,7 +27,6 @@ import CookieBanner, { setCookie } from './components/CookieBanner';
 
 export default function App() {
   const [theme, setTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'dark');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [tickets, setTickets] = useState([]);
   const [faqRules, setFaqRules] = useState([]);
@@ -184,65 +182,50 @@ export default function App() {
             }}
           >
             <span className="brand__icon">
-              <Activity size={17} />
+              <Activity size={16} />
             </span>
-            <span>ПУЛЬС Бот</span>
+            <span className="mono">ПУЛЬС // BOT DESK</span>
+            <span className="online-dot" title="Сервер активен" />
           </a>
 
           {!isAdminRoute && (
-            <nav className={`nav ${mobileMenuOpen ? 'is-open' : ''}`} aria-label="Разделы пульта">
+            <nav className="console-tabs" aria-label="Разделы пульта">
               <button
                 type="button"
-                className={`nav__link ${deskTab === 'tickets' ? 'is-active' : ''}`}
-                onClick={() => {
-                  setDeskTab('tickets');
-                  setMobileMenuOpen(false);
-                }}
+                className={`console-tab ${deskTab === 'tickets' ? 'is-active' : ''}`}
+                onClick={() => setDeskTab('tickets')}
               >
-                <MessageCircle size={15} /> Диалоги ({tickets.length})
+                <MessageCircle size={14} /> Диалоги ({tickets.length})
               </button>
               <button
                 type="button"
-                className={`nav__link ${deskTab === 'faq' ? 'is-active' : ''}`}
-                onClick={() => {
-                  setDeskTab('faq');
-                  setMobileMenuOpen(false);
-                }}
+                className={`console-tab ${deskTab === 'faq' ? 'is-active' : ''}`}
+                onClick={() => setDeskTab('faq')}
               >
-                <Bot size={15} /> Автоответы ({faqRules.length})
+                <Bot size={14} /> Автоответы ({faqRules.length})
               </button>
               <button
                 type="button"
-                className={`nav__link ${deskTab === 'campaigns' ? 'is-active' : ''}`}
-                onClick={() => {
-                  setDeskTab('campaigns');
-                  setMobileMenuOpen(false);
-                }}
+                className={`console-tab ${deskTab === 'campaigns' ? 'is-active' : ''}`}
+                onClick={() => setDeskTab('campaigns')}
               >
-                <Megaphone size={15} /> Рассылки
+                <Megaphone size={14} /> Рассылки
               </button>
             </nav>
           )}
 
           <div className="header__right">
             {!isAdminRoute && (
-              <button type="button" className="btn btn--outline btn--sm" onClick={() => setCallbackOpen(true)}>
-                <PhoneCall size={14} /> Обратный звонок
-              </button>
+              <>
+                <span className="sla-chip mono">1 240 подп. &bull; SLA 2 мин</span>
+                <button type="button" className="btn btn--outline btn--sm" onClick={() => setCallbackOpen(true)}>
+                  <PhoneCall size={14} /> Звонок
+                </button>
+              </>
             )}
             <button type="button" className="icon-btn" onClick={toggleTheme} aria-label="Переключить тему">
-              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+              {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
             </button>
-            {!isAdminRoute && (
-              <button
-                type="button"
-                className="icon-btn mobile-menu-btn"
-                onClick={() => setMobileMenuOpen((v) => !v)}
-                aria-label="Меню"
-              >
-                {mobileMenuOpen ? <X size={17} /> : <Menu size={17} />}
-              </button>
-            )}
           </div>
         </div>
       </header>
@@ -263,19 +246,6 @@ export default function App() {
         />
       ) : (
         <main id="workspace" className="container workspace">
-          <div className="top-summary">
-            <div>
-              <span className="eyebrow">Двухсторонняя связка</span>
-              <h1 style={{ fontSize: 'clamp(1.45rem, 2.8vw, 2rem)' }}>
-                Telegram-бот поддержки + Пульт оператора
-              </h1>
-            </div>
-            <div className="stats-pills">
-              <span className="stat-chip mono">Подписчиков: 1 240</span>
-              <span className="stat-chip mono">Автоответов FAQ: 861</span>
-              <span className="stat-chip mono">Средний ответ: 2 мин</span>
-            </div>
-          </div>
 
           <div className="split-grid">
             {/* LEFT: Live Telegram Bot Emulator */}
